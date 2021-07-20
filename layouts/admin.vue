@@ -3,7 +3,7 @@
     <Navbar />
     <section class="main-content columns">
       <aside class="column is-2 section">
-        <SideMenuBar :items="sidebarItems" />
+        <SideMenuBar :items="sidebarItems" title="Admin" />
       </aside>
       <div class="container column is-10">
         <nuxt />
@@ -22,13 +22,13 @@ export default {
       sidebarItems: [
         {
           title: 'Signals',
-          icon: 'chart-line',
-          to: { name: 'index' },
+          icon: 'plus',
+          to: { name: 'admin-signals' },
         },
         {
           title: 'Users',
-          icon: 'users',
-          to: { name: 'users' },
+          icon: 'account',
+          to: { name: 'admin-users' },
         },
       ],
     }

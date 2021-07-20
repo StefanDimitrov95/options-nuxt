@@ -1,6 +1,6 @@
 <template>
   <form action="">
-    <div class="modal-card" style="width: auto">
+    <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">Edit signal</p>
         <button type="button" class="delete" @click="$emit('close')" />
@@ -29,6 +29,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-</style>

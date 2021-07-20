@@ -3,7 +3,7 @@
     <Navbar />
     <section class="main-content columns">
       <aside class="column is-2 section">
-        <SideMenuBar :items="sidebarItems" />
+        <SideMenuBar :items="sidebarItems" title="General" />
       </aside>
       <div class="container column is-10">
         <nuxt />

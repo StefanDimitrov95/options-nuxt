@@ -1,8 +1,19 @@
 <template>
   <section>
-            <button class="button" v-on:click="onCreate()">
-          <b-icon icon="plus"></b-icon>
-        </button>
+    <button class="button" v-on:click="onCreate()">
+      <b-icon icon="plus"></b-icon>
+    </button>
+
+    <b-button type="is-primary is-light" :disabled="!checkedRows.length"
+      >Approve {{ checkedRows.length }}</b-button
+    >
+    <b-button
+      type="is-danger"
+      :disabled="!checkedRows.length"
+      v-on:click="onDeleteAll()">
+      Delete {{ checkedRows.length }}</b-button
+    >
+
     <b-table
       :data="data"
       checkable
@@ -13,7 +24,14 @@
         <button class="button is-small" v-on:click="onEdit(props.row)">
           <b-icon icon="pencil"></b-icon>
         </button>
+        <button
+          class="button is-small is-danger is-light"
+          v-on:click="onDelete(props.row)"
+        >
+          <b-icon icon="delete"></b-icon>
+        </button>
       </b-table-column>
+
       <b-table-column field="Symbol" label="Symbol" v-slot="props">
         {{ props.row['Symbol'] }}
       </b-table-column>
@@ -66,12 +84,10 @@
         <div class="has-text-centered">No records</div>
       </template>
     </b-table>
-    <pre>{{ checkedRows }}</pre>
     <b-modal
       v-model="isModalActive"
       has-modal-card
       trap-focus
-      full-screen
       :destroy-on-hide="true"
       :can-cancel="[]"
       aria-role="dialog"
@@ -96,21 +112,48 @@ export default {
       checkboxPosition: 'left',
       checkedRows: [],
       isModalActive: false,
-      signal: null
+      signal: null,
     }
   },
   methods: {
     onEdit(row) {
       this.signal = row
-      this.isModalActive = true;
+      this.isModalActive = true
     },
     onCreate() {
-      this.signal = { a: '', b: '' };
-      this.isModalActive = true;
-    }
+      this.signal = { a: '', b: '' }
+      this.isModalActive = true
+    },
+    onDelete(row) {
+      this.$buefy.dialog.confirm({
+        title: `Deleting signal ${row.Symbol}`,
+        message: `Are you sure you want to <b>delete</b> the signal with ticker <b>${row.Symbol}</b>? This action cannot be undone.`,
+        confirmText: 'Delete Signal',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => {
+          this.$buefy.toast.open(`Signal ${row.Symbol} deleted!`);
+          this.data.splice(this.data.indexOf(row), 1);
+        }
+      })
+    },
+    onDeleteAll() {
+      this.$buefy.dialog.confirm({
+        title: `Deleting ${this.checkedRows.length} rows.`,
+        message: `Are you sure you want to <b>delete</b> the selected rows? This action cannot be undone.`,
+        confirmText: 'Delete Imported Data',
+        type: 'is-danger',
+        hasIcon: true,
+        onConfirm: () => {
+          this.$buefy.toast.open(`${this.checkedRows.length} rows deleted!`);
+          this.data = this.data.filter(n => !this.checkedRows.includes(n));
+          this.checkedRows = [];
+        },
+      })
+    },
   },
   components: {
-    SignalModal
-  }
+    SignalModal,
+  },
 }
 </script>

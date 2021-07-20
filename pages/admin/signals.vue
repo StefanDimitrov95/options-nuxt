@@ -1,21 +1,26 @@
 <template>
   <div>
-    <Table/>
+    <upload-button/>
+    <signal-table/>
   </div>
 </template>
 
 <script>
-import Table from '~/components/Table'
-
+import SignalTable from '~/components/SignalTable'
+import UploadButton from '~/components/UploadButton'
+  
 export default {
   
   layout: 'admin',
   components: {
-    Table,
+    SignalTable,
+    UploadButton
   },
 }
 </script>
 
-<style>
-
+<style scoped>
+div {
+  margin-top: 1em;  
+}
 </style>
