@@ -10,15 +10,19 @@
     <b-button
       type="is-danger"
       :disabled="!checkedRows.length"
-      v-on:click="onDeleteAll()">
+      v-on:click="onDeleteAll()"
+    >
       Delete {{ checkedRows.length }}</b-button
     >
 
     <b-table
       :data="data"
       checkable
+      hoverable
+      :debounce-search="250"
       :checked-rows.sync="checkedRows"
       :default-sort="['Symbol', 'desc']"
+      :v-bind="keys"
     >
       <b-table-column label="Actions" v-slot="props">
         <button class="button is-small" v-on:click="onEdit(props.row)">
@@ -32,54 +36,20 @@
         </button>
       </b-table-column>
 
-      <b-table-column field="Symbol" label="Symbol" v-slot="props">
-        {{ props.row['Symbol'] }}
+      <b-table-column
+        searchable
+        field="Symbol"
+        width="6em"
+        label="Symbol"
+        v-slot="props"
+      >
+        {{ props.row[keys[0]] }}
       </b-table-column>
-
-      <b-table-column field="Price" label="Price" v-slot="props">
-        {{ props.row['Price'] }}
-      </b-table-column>
-
-      <b-table-column field="Max Profit" label="Max Profit" v-slot="props">
-        {{ props.row['Max Profit'] }}
-      </b-table-column>
-
-      <b-table-column field="Max Profit%" label="Max Profit%" v-slot="props">
-        {{ props.row['Max Profit%'] }}
-      </b-table-column>
-
-      <b-table-column field="Max Loss" label="Max Loss" v-slot="props">
-        {{ props.row['Max Loss'] }}
-      </b-table-column>
-
-      <b-table-column field="BE" label="BE" v-slot="props">
-        {{ props.row['BE'] }}
-      </b-table-column>
-
-      <b-table-column field="Probability" label="Probability" v-slot="props">
-        {{ props.row['Probability'] }}
-      </b-table-column>
-
-      <b-table-column field="Exp Date" label="Exp Date" v-slot="props">
-        {{ props.row['Exp Date'] }}
-      </b-table-column>
-
-      <b-table-column field="Leg1 Strike" label="Leg1 Strike" v-slot="props">
-        {{ props.row['Leg1 Strike'] }}
-      </b-table-column>
-
-      <b-table-column field="Leg1 Bid" label="Leg1 Bid" v-slot="props">
-        {{ props.row['Leg1 Bid'] }}
-      </b-table-column>
-
-      <b-table-column field="Leg2 Strike" label="Leg2 Strike" v-slot="props">
-        {{ props.row['Leg2 Strike'] }}
-      </b-table-column>
-
-      <b-table-column field="Leg2 Ask" label="Leg2 Ask" v-slot="props">
-        {{ props.row['Leg2 Ask'] }}
-      </b-table-column>
-
+      <template v-for="(v, k) in keys.slice(1)"> 
+        <b-table-column :field="v" :label="v" v-slot="props" :key="k">
+          {{ props.row[v] }}
+        </b-table-column>
+      </template>
       <template #empty>
         <div class="has-text-centered">No records</div>
       </template>
@@ -106,9 +76,23 @@ import SignalModal from '~/components/SignalModal'
 export default {
   data() {
     const data = require('@/static/calls.json')
-
+    const keys = [
+      'Symbol',
+      'Price',
+      'Max Profit',
+      'Max Profit%',
+      'Max Loss',
+      'BE',
+      'Probability',
+      'Exp Date',
+      'Leg1 Strike',
+      'Leg1 Bid',
+      'Leg2 Strike',
+      'Leg2 Ask',
+    ]
     return {
       data,
+      keys,
       checkboxPosition: 'left',
       checkedRows: [],
       isModalActive: false,
@@ -121,7 +105,7 @@ export default {
       this.isModalActive = true
     },
     onCreate() {
-      this.signal = { a: '', b: '' }
+      this.signal = Object.fromEntries(this.keys.map(k => [k, null]))
       this.isModalActive = true
     },
     onDelete(row) {
@@ -132,9 +116,9 @@ export default {
         type: 'is-danger',
         hasIcon: true,
         onConfirm: () => {
-          this.$buefy.toast.open(`Signal ${row.Symbol} deleted!`);
-          this.data.splice(this.data.indexOf(row), 1);
-        }
+          this.$buefy.toast.open(`Signal ${row.Symbol} deleted!`)
+          this.data.splice(this.data.indexOf(row), 1)
+        },
       })
     },
     onDeleteAll() {
@@ -145,9 +129,9 @@ export default {
         type: 'is-danger',
         hasIcon: true,
         onConfirm: () => {
-          this.$buefy.toast.open(`${this.checkedRows.length} rows deleted!`);
-          this.data = this.data.filter(n => !this.checkedRows.includes(n));
-          this.checkedRows = [];
+          this.$buefy.toast.open(`${this.checkedRows.length} rows deleted!`)
+          this.data = this.data.filter((n) => !this.checkedRows.includes(n))
+          this.checkedRows = []
         },
       })
     },

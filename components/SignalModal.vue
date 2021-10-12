@@ -2,18 +2,18 @@
   <form action="">
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">Edit signal</p>
+        <p class="modal-card-title"><slot name="title" /></p>
         <button type="button" class="delete" @click="$emit('close')" />
       </header>
       <section class="modal-card-body">
-          <div v-for="(k, v) in signal" :key="v">
-          <b-field :label="v">
-            <b-input :value="k"></b-input>
+        <div v-for="(v, k) in form" :key="k">
+          <b-field :label="k">
+            <b-input :value="v" v-model="form[k]"></b-input>
           </b-field>
-          </div>
+        </div>
       </section>
       <footer class="modal-card-foot">
-        <b-button label="Save" type="is-primary" />
+        <b-button label="Save" type="is-primary" @click="onSubmit()" />
         <b-button label="Close" @click="$emit('close')" />
       </footer>
     </div>
@@ -22,10 +22,26 @@
 
 <script>
 export default {
+  data() {
+    return {
+      form: { ...this.signal },
+    }
+  },
   props: {
     signal: {
-      type: Object
+      type: Object,
     },
   },
+  methods: {
+    onSubmit() {
+      console.log(this.signal)
+      this.$emit('close')
+    },
+  },
+  watch: {
+    signal(newValue) {
+      this.signal = newValue;
+    }
+  }
 }
 </script>
